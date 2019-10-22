@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <item name="universitiesKotlinActivity" type="id" />
+    <item name="universitiesJavaActivity" type="id" />
+
+</resources>
