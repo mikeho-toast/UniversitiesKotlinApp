@@ -5,14 +5,13 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class UniversitiesKotlinActivityPresenter(mView: UniversitiesContract.UniversitiesView):
+class UniversitiesKotlinActivityPresenter(mView: UniversitiesContract.UniversitiesView) :
     UniversitiesContract.UniversitiesPresenter {
     private var universitiesView: UniversitiesContract.UniversitiesView = mView
 
-    init {
-        universitiesView.bindUniversities()
-    }
-
+    /**
+     * Load university data from service
+     */
     override fun loadUniversities(universitiesService: UniversitiesService) {
         val call = universitiesService.listUniversities()
 
@@ -23,6 +22,9 @@ class UniversitiesKotlinActivityPresenter(mView: UniversitiesContract.Universiti
 
             override fun onResponse(call: Call<List<University>>, response: Response<List<University>>) {
                 val responseBody = response.body()
+                if (responseBody != null) {
+                    universitiesView.bindUniversities(responseBody)
+                }
             }
         })
     }

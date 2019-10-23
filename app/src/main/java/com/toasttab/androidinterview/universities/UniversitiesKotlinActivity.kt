@@ -4,15 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.widget.Toast
 import com.toasttab.androidinterview.R
 import com.toasttab.androidinterview.app.BaseDaggerAppCompatActivity
 import com.toasttab.androidinterview.app.RecyclerAdapter
-import kotlinx.android.synthetic.main.activity_universities.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import javax.inject.Inject
 
 //how to set a web view url in android 🌐️🌇️✅
@@ -27,7 +22,7 @@ class UniversitiesKotlinActivity : BaseDaggerAppCompatActivity(), UniversitiesCo
     @Inject
     lateinit var universitiesService: UniversitiesService
 
-    private var presenter: UniversitiesContract.UniversitiesPresenter? = null
+    private lateinit var presenter: UniversitiesContract.UniversitiesPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,30 +32,24 @@ class UniversitiesKotlinActivity : BaseDaggerAppCompatActivity(), UniversitiesCo
 
         viewManager = LinearLayoutManager(this)
         presenter = UniversitiesKotlinActivityPresenter(this)
+        presenter.loadUniversities(universitiesService)
     }
 
-    override fun bindUniversities() {
-        val call = universitiesService.listUniversities()
-
-        call.enqueue(object : Callback<List<University>> {
-            override fun onFailure(call: Call<List<University>>, t: Throwable) {
-                Log.v("retrofit", "call failed")
-            }
-
-            override fun onResponse(call: Call<List<University>>, response: Response<List<University>>) {
-                val responseBody = response.body()
-                if (responseBody != null) {
-                    universitiesList.adapter =
-                        RecyclerAdapter(responseBody) { university: University -> navigateToWebView(university) } //
-                }
-            }
-        })
+    /**
+     * Display university to view
+     */
+    override fun bindUniversities(universities: List<University>) {
+        //apply is for . short hand
         recyclerView = findViewById<RecyclerView>(R.id.universitiesList).apply {
+            adapter = RecyclerAdapter(universities) { university: University -> navigateToWebView(university) }
             setHasFixedSize(true)
             layoutManager = viewManager
         }
     }
 
+    /**
+     * The onClick method which retrieves the url link, name of school and country of the school
+     */
     override fun navigateToWebView(university: University) {  //onClick Action
         Toast.makeText(this, "Clicked: ${university.name}", Toast.LENGTH_LONG).show()
         val intent = Intent(this, UniversityWebPageActivity::class.java)

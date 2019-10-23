@@ -13,7 +13,7 @@ interface UniversitiesService {
     fun listUniversities(
         @Query("country") country: String? = null,
         @Query("name") name: String? = null
-    ) : Call<List<University>>
+    ): Call<List<University>>
 }
 
 data class University(
